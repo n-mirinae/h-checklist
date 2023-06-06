@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>질문</title>
+    <style>
+        h2 {
+            font-size: 16px;
+            font-weight: normal;
+        }
+
+        label {
+            font-weight: normal;
+            font-family: inherit;
+        }
+    </style>
+</head>
+
+<body>
+    <p>※건강체크리스트는 인체 내에서 균형을 이루지 못한 부분을 찾아내어 개개인의 건강을 개선시킬 수 있는 방법을 찾을 수 있도록 도와줍니다.
+        (본 설문지 결과는 어디에서 저장되지 않습니다. ※문의전화: 010-6712-3851)</p>
+
+
+    <p>
+        <label for="nameInput">이름:</label>
+        <input type="text" id="nameInput" value="이순신">
+    </p>
+
+    <p>
+        <label for="ageSelect">나이대 선택:</label>
+        <select id="ageSelect">
+            <option value="10대">10대</option>
+            <option value="20대">20대</option>
+            <option value="30대">30대</option>
+            <option value="40대">40대</option>
+            <option value="50대" selected>50대</option>
+            <option value="60대">60대</option>
+            <option value="70대">70대</option>
+            <option value="80대">80대</option>
+            <option value="90대">90대</option>
+        </select>
+    </p>
+
+    <p>
+        <label for="fmSelect">남녀구분:</label>
+        <label for="genderFemale">여성:</label>
+        <input type="radio" id="genderFemale" name="gender" value="female" checked>
+        <label for="genderMale">남성:</label>
+        <input type="radio" id="genderMale" name="gender" value="male">
+    </p>
+
+    <button id="startButton">시작하기</button> <!-- 시작하기 버튼 추가 -->
+
+    <div id="questionContainer" style="display: none;">
+        <p>▶아래 질문에 답을 선택해 주세요.<br><br></n>
+        </p>
+        <!-- 질문들을 여기에 추가 -->
+    </div>
+
+    <button id="analyzeButton">분석값</button>
+    <div id="valueContainer"></div>
+
+    <button id="resultButton" style="display: none;">분석결과</button>
+    <div id="resultContainer" style="display: none;"></div>
+
+    <script>
+        var questiontext = [
+            { question: "질문 1: 자고 일어나도 피로감이 지속된다", value: "ABEF", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "male" },
+            { question: "질문 2: 소화가 잘 안 된다", value: "ABF", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "male" },
+            { question: "질문 3: 피부색이 칙칙하다", value: "ABCE", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "male" },
+            { question: "질문 4: 술을 마시면 숙취가 심하다", value: "ACE", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "male" },
+            { question: "질문 5: 상복부 통증이 있다", value: "ABF", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "male" },
+            { question: "질문 6: 자주 체한다", value: "ABEF", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "male" },
+            { question: "질문 7: 신물이 난다", value: "ABF", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "male" },
+            { question: "질문 8: 식욕이 없거나 식사량 조절이 어렵다", value: "ACE", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "male" },
+            { question: "질문 9: 가스가 많이 찬다", value: "ABC", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "male" },
+            { question: "질문 10: 변비나 설사가 있다", value: "ABE", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "male" },
+            { question: "질문 11: 손발이 차다", value: "BCEF", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "male" },
+            { question: "질문 12: 조금만 움직여도 숨이 차거나 가슴에 통증이 온다", value: "BCE", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "male" },
+            { question: "질문 13: 과거에 순환계 질환을 앓았거나, 현재 앓고 있다", value: "BF", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "male" },
+            { question: "질문 14: 잘 붓는다", value: "ABCE", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "male" },
+            { question: "질문 15: 멍이 쉽게 든다", value: "BEF", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "male" },
+            { question: "질문 16: 두통이 있다", value: "ABE", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "male" },
+            { question: "질문 17: 손발이 자주 저린다", value: "BEF", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "male" },
+            { question: "질문 18: 어지러움증이 있다", value: "ABC", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "male" },
+            { question: "질문 19: 손톱이 잘 부러진다", value: "BCE", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "male" },
+            { question: "질문 20: 어깨가 자주 뭉친다", value: "ABEF", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "male" },
+            { question: "질문 21: 가공식품을 자주 먹는다", value: "CF", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "male" },
+            { question: "질문 22: 술을 자주 마신다", value: "ACE", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "male" },
+            { question: "질문 23: 1일 10개피 이상 흡연을 한다", value: "ABCDEF", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "male" },
+            { question: "질문 24: 육류 음식을 선호한다", value: "ABCE", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "male" },
+            { question: "질문 25: 식습관이 불규칙하다", value: "CDE", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "male" },
+            { question: "질문 26: 숙면을 취하기가 어렵다", value: "ABCF", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "male" },
+            { question: "질문 27: 자극적인 음식을 선호한다", value: "AC", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "male" },
+            { question: "질문 28: 운동이 부족하다", value: "BCDE", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "male" },
+            { question: "질문 29: 1일 5컵 이하로 물을 마신다", value: "ABCE", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "male" },
+            { question: "질문 30: 의약품을 자주 먹거나, 주사를 자주 맞는다", value: "ACDE", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "male" },
+            { question: "질문 31: 감기가 자주 걸린다", value: "BCD", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "male" },
+            { question: "질문 32: 알레르기 질환이 있다 (천식 포함)", value: "DEF", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "male" },
+            { question: "질문 33: 무좀이나 습진, 비듬이 있다", value: "BCD", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "male" },
+            { question: "질문 34: 스트레스를 자주 받는다", value: "ABCDEF", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "male" },
+            { question: "질문 35: 상처가 잘 낮지 않는다", value: "BCD", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "male" },
+            { question: "질문 36: 잇몸 출혈이 잦거나 입안이 자주 헌다", value: "ABCD", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "male" },
+            { question: "질문 37: 염증성 질환을 가지고 있다 (위염, 장염, 관절염 등)", value: "ADE", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "male" },
+            { question: "질문 38: 질환 가족력이 있다 (당료, 암, 알레르기성질환 등)", value: "CDE", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "male" },
+            { question: "질문 39: 피부질환을 가지고 있다", value: "ABDF", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "male" },
+            { question: "질문 40: 이유 없는 무기력증을 가끔 느낀다", value: "ABCDEF", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "male" },
+            { question: "질문 41: 배가 고프면 짜증이 난다", value: "ACE", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "male" },
+            { question: "질문 42: 체중이 지속적으로 감소하거나 증가하고 있다", value: "AEF", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "male" },
+            { question: "질문 43: 가끔 다이어트를 한다", value: "ACE", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "male" },
+            { question: "질문 44: 탈모증이 있다 (선천적인 탈모 제외)", value: "BCE", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "male" },
+            { question: "질문 45: 식욕 조절이 어렵다", value: "ACEF", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "male" },
+            { question: "질문 46: 땀을 심하게 흘린다", value: "BCEF", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "male" },
+            { question: "질문 47: 시력이 점점 저하된다고 느낀다", value: "ABE", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "male" },
+            { question: "질문 48: 근무시간이 불규칙하다 (2교대, 3교대, 야간근무 등)", value: "ABDEF", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "male" },
+            { question: "질문 49: 여러가지 스테미너 음식을 먹어도 별로 효과 없다", value: "ABEF", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "male" },
+            { question: "질문 50: 이유 없는 통증이 있다", value: "ADEF", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "male" },
+            { question: "질문 51: 골다공증이 있다", value: "CF", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "male" },
+            { question: "질문 52: 비정상적인 질 분비물이 나온다 (냉대하 등)", value: "ABF", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "female" },
+            { question: "질문 53: 생리량의 기복이 심하다", value: "ABF", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "female" },
+            { question: "질문 54: 생리가 불규칙하다", value: "BCF", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "female" },
+            { question: "질문 55: 생리통이 심하다", value: "BCF", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "female" },
+            { question: "질문 56: 생리 시 검은 혈 덩어리가 나온다", value: "BCF", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "female" },
+            { question: "질문 57: 자궁이나 난소관련 질환을 앓거나 현재 앓고 있다", value: "BCEF", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "female" },
+            { question: "질문 58: 성적욕구가 저하되었다", value: "ABF", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "female" },
+            { question: "질문 59: 피부에 잔주름이 많다", value: "BCEF", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "female" },
+            { question: "질문 60: 폐경기이다", value: "BF", secondValue: "아니오", thirdValue: "해당없음", fourthValue: "female" }
+        ];
+
+        var questionContainer = document.getElementById("questionContainer");
+        var analyzeButton = document.getElementById("analyzeButton");
+        var valueContainer = document.getElementById("valueContainer");
+        var resultButton = document.getElementById("resultButton");
+        var resultContainer = document.getElementById("resultContainer");
+        var startButton = document.getElementById("startButton"); // 시작하기 버튼 추가
+
+        // 시작하기 버튼 클릭 시 동작
+        startButton.addEventListener("click", function () {
+            // 분석값 초기화
+            valueContainer.textContent = "";
+
+            // 분석결과값 초기화
+            resultContainer.textContent = "";
+            questionContainer.style.display = "block";
+            analyzeButton.style.display = "block";
+            resultButton.style.display = "none";
+            resultContainer.style.display = "none";
+        });
+
+        // 모든 질문 표시
+        for (var i = 0; i < questiontext.length; i++) {
+            var questionElement = document.createElement("h2");
+            questionElement.textContent = questiontext[i].question;
+            questionContainer.appendChild(questionElement);
+
+            var options = [
+                questiontext[i].value,
+                questiontext[i].secondValue,
+                questiontext[i].thirdValue
+            ];
+
+            var radioOptions = document.createElement("div");
+
+            for (var j = 0; j < options.length; j++) {
+                var label = document.createElement("label");
+                var radio = document.createElement("input");
+                radio.type = "radio";
+                radio.name = "answer" + i;
+                radio.value = options[j];
+                label.appendChild(radio);
+                if (options[j] === questiontext[i].value) {
+                    label.appendChild(document.createTextNode("그렇다   "));
+                } else {
+                    label.appendChild(document.createTextNode(options[j] + "   "));
+                }
+                radioOptions.appendChild(label);
+            }
+
+            questionContainer.appendChild(radioOptions);
+            // 한 줄 띄우기
+            lineBreak = document.createElement("br");
+            questionContainer.appendChild(lineBreak);
+        }
+
+        // 분석값 버튼 클릭 시 선택한 "그렇다" 값을 가진 질문의 value 값을 표시하고, 분석결과 표시 초기화
+        analyzeButton.addEventListener("click", function () {
+            questionContainer.style.display = "none";
+            analyzeButton.style.display = "none";
+            resultButton.style.display = "block";
+            resultContainer.style.display = "block";
+
+            var selectedValues = [];
+            var radioInputs = document.querySelectorAll("input[type='radio']:checked");
+            for (var i = 0; i < radioInputs.length; i++) {
+                if (radioInputs[i].nextSibling.textContent.trim() === "그렇다") {
+                    selectedValues.push(radioInputs[i].value);
+                }
+            }
+            valueContainer.textContent = selectedValues.join(", ");
+            resultButton.style.display = "inline-block";
+            resultContainer.style.display = "none";
+            resultContainer.textContent = "";
+        });
+
+        // 분석결과 버튼 클릭 시 선택한 "그렇다" 값을 가진 질문의 value 값 전체에 대해 문자 단위별 개수를 세어 표시
+        resultButton.addEventListener("click", function () {
+            var name = document.getElementById("nameInput").value;
+            var age = document.getElementById("ageSelect").value;
+            var gender = document.querySelector('input[name="gender"]:checked').value;
+            var values = valueContainer.textContent;
+
+            var selectedValues = valueContainer.textContent.replace(/[^A-F]/g, ""); // A-F 문자만 추출
+            var result = {};
+            for (var i = 0; i < selectedValues.length; i++) {
+                var char = selectedValues[i];
+                if (result[char]) {
+                    result[char]++;
+                } else {
+                    result[char] = 1;
+                }
+            }
+
+            var resultText = "";
+            for (var char in result) {
+                switch (char) {
+                    case "A":
+                        resultText += "소화 ";
+                        break;
+                    case "B":
+                        resultText += "순환 ";
+                        break;
+                    case "C":
+                        resultText += "영양 ";
+                        break;
+                    case "D":
+                        resultText += "면역 ";
+                        break;
+                    case "E":
+                        resultText += "대사 ";
+                        break;
+                    case "F":
+                        resultText += "호로몬 ";
+                        break;
+                    default:
+                        resultText += char + " ";
+                        break;
+                }
+                resultText + " ";
+
+                // 개수에 따른 분류 기준에 따라 분류
+                var count = result[char];
+                var category = "";
+                if (char === "A") {
+                    if (count >= 0 && count <= 3) {
+                        category = "양호";
+                    } else if (count >= 4 && count <= 8) {
+                        category = "보통";
+                    } else if (count >= 9 && count <= 14) {
+                        category = "경계";
+                    } else if (count >= 15) {
+                        category = "위험";
+                    }
+                } else if (char === "B") {
+                    if (count >= 0 && count <= 4) {
+                        category = "양호";
+                    } else if (count >= 5 && count <= 10) {
+                        category = "보통";
+                    } else if (count >= 11 && count <= 17) {
+                        category = "경계";
+                    } else if (count >= 18) {
+                        category = "위험";
+                    }
+                } else if (char === "C") {
+                    if (count >= 0 && count <= 3) {
+                        category = "양호";
+                    } else if (count >= 4 && count <= 8) {
+                        category = "보통";
+                    } else if (count >= 9 && count <= 13) {
+                        category = "경계";
+                    } else if (count >= 14) {
+                        category = "위험";
+                    }
+                } else if (char === "D") {
+                    if (count >= 0 && count <= 1) {
+                        category = "양호";
+                    } else if (count >= 2 && count <= 3) {
+                        category = "보통";
+                    } else if (count >= 4 && count <= 5) {
+                        category = "경계";
+                    } else if (count >= 6) {
+                        category = "위험";
+                    }
+                } else if (char === "E") {
+                    if (count >= 0 && count <= 3) {
+                        category = "양호";
+                    } else if (count >= 4 && count <= 8) {
+                        category = "보통";
+                    } else if (count >= 9 && count <= 14) {
+                        category = "경계";
+                    } else if (count >= 15) {
+                        category = "위험";
+                    }
+                } else if (char === "F") {
+                    if (count >= 0 && count <= 2) {
+                        category = "양호";
+                    } else if (count >= 3 && count <= 6) {
+                        category = "보통";
+                    } else if (count >= 7 && count <= 12) {
+                        category = "경계";
+                    } else if (count >= 13) {
+                        category = "위험";
+                    }
+                }
+
+                resultText += category + "<br>";
+            }
+
+            resultContainer.innerHTML = "<p>" + resultText.replace(/\n/g, "<br>") + "</p>"; // <p> 태그로 감싸고, 줄바꿈 문자를 <br> 태그로 대체합니다.
+            resultContainer.style.display = "block";
+        });
+
+    </script>
+</body>
+
+</html>
